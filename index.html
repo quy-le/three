@@ -12,9 +12,12 @@
 </head>
 <body>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/three.js/r57/three.min.js"></script>
+<script src="keyboard-controls.js"></script>
+<script src="FirstPersonControls.js"></script>
 <script src="lodash.js"></script>
 <script>
-    var camera, scene, renderer;
+    var camera, scene, renderer,
+            controls, clock;
 
     function setup() {
         document.body.style.backgroundColor = '#d7f0f7';
@@ -23,6 +26,7 @@
 
         requestAnimationFrame(function animate() {
             renderer.render(scene, camera);
+            controls.update(clock.getDelta());
             requestAnimationFrame(animate);
         });
     }
@@ -32,22 +36,26 @@
         scene.fog = new THREE.FogExp2(0x9db3b5, 0.002);
 
         camera = new THREE.PerspectiveCamera(
-                75,
-                window.innerWidth / window.innerHeight,
-                1,
-                Math.pow(10, 4)
+            75,
+            window.innerWidth / window.innerHeight,
+            1,
+            Math.pow(10, 4)
         );
         camera.position.y = 400;
         camera.position.z = 400;
         camera.rotation.x = - 45 * Math.PI / 180;
 
+        // set up controls
+        clock = new THREE.Clock();
+//        controls = new KeyboardControls(camera);
+        controls = new THREE.FirstPersonControls(camera);
+        controls.movementSpeed = 100;
+        controls.lookSpeed = 0.1; 
+
         renderer = new THREE.WebGLRenderer({antialias: true});
         renderer.shadowMapEnabled = true;
         renderer.shadowMapSoft = true
-        renderer.setSize(
-                window.innerWidth,
-                window.innerHeight
-        );
+        renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
     }
 
